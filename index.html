@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Raah: Journey Through Nagaland</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: black;
+      color: #f0f0f0;
+      height: 100%;
+      overflow-x: hidden;
+    }
+    .screen {
+      display: none;
+      padding: 1rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    .active {
+      display: block;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #f0f0f0;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    .button {
+      display: block;
+      margin: 1rem auto;
+      padding: 1rem;
+      font-size: 1.1rem;
+      color: #ffffff;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 90%;
+      max-width: 320px;
+      transition: background-color 0.2s ease;
+    }
+    .button:hover,
+    .button:active {
+      background-color: #187bcd;
+    }
+    #game {
+      white-space: pre-wrap;
+      font-size: 1.05rem;
+    }
+    .dialogue {
+      font-style: italic;
+      color: #b0d0ff;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      #game {
+        font-size: 1rem;
+      }
+      .button {
+        font-size: 1rem;
+        padding: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash" class="screen active">
+    <h1>Raah</h1>
+    <p style="text-align:center">A journey through Nagaland — led by those who belong to the land.</p>
+    <button class="button" onclick="showScreen('description')">Start</button>
+  </div>
+
+  <!-- Description Screen -->
+  <div id="description" class="screen">
+    <h2>The Story</h2>
+    <p>
+      You are part of a journey curated not just for you, but through you. Led by locals, every path you walk, every story you hear, transforms the space from foreign to familiar. You, the wanderer, are guided not by maps but by voices of the land.
+    </p>
+    <p>
+      Each decision you make opens new directions. Will you sit with the grandmother? Will you dance? Will you plant? The space is yours to unfold.
+    </p>
+    <button class="button" onclick="startGame()">Begin Your Raah</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="gameScreen" class="screen">
+    <div id="game"></div>
+    <div id="choices"></div>
+    <div id="continueBtn" style="text-align:center; margin-top: 1.5rem;"></div>
+  </div>
+
+  <script>
+    const scenes = [
+      {
+        "text": "You arrive in a quiet village in Nagaland. The sun is setting, casting golden hues on the hills.",
+        "choices": [
+          {
+            "text": "Greet the elder sitting outside.",
+            "result": "The elder smiles warmly and beckons you to sit beside her. She begins telling you a story from her youth."
+          },
+          {
+            "text": "Walk further into the village.",
+            "result": "You walk down a winding path, passing wooden houses. Children wave at you as they play."
+          }
+        ]
+      },
+      {
+        "text": "You hear rhythmic drumming in the distance.",
+        "choices": [
+          {
+            "text": "Follow the sound.",
+            "result": "You find a group practicing a traditional dance. They invite you to join."
+          },
+          {
+            "text": "Ignore it and head toward the river.",
+            "result": "The river is calm. You sit by the bank, listening to the water flow."
+          }
+        ]
+      },
+      {
+        "text": "A woman offers you a small seedling in a cup of soil.",
+        "choices": [
+          {
+            "text": "Plant it with her.",
+            "result": "Together, you plant it near the community garden. She thanks you in her language."
+          },
+          {
+            "text": "Politely decline.",
+            "result": "She nods and plants it alone, her hands gentle with the earth."
+          }
+        ]
+      },
+      {
+        "text": "You spot a small group making bamboo crafts under a thatched roof.",
+        "choices": [
+          {
+            "text": "Ask to join and learn.",
+            "result": "They smile and hand you a piece to weave. It's harder than it looks, but they guide you patiently."
+          },
+          {
+            "text": "Watch from a distance.",
+            "result": "You admire the intricate designs and the rhythm of hands shaping tradition."
+          }
+        ]
+      }
+    ];
+
+    let sceneIndex = 0;
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function startGame() {
+      showScreen('gameScreen');
+      showScene();
+    }
+
+    function showScene() {
+      const scene = scenes[sceneIndex];
+      document.getElementById('game').innerHTML = scene.text;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('continueBtn').innerHTML = '';
+      if (scene.choices.length === 0) {
+        document.getElementById('continueBtn').innerHTML = '<p style="text-align:center;margin-top:2rem;">-- End of Journey --</p>';
+        return;
+      }
+      scene.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'button';
+        btn.textContent = choice.text;
+        btn.onclick = () => {
+          document.getElementById('game').innerHTML += `\n\n> ${choice.text}\n${choice.result}`;
+          document.getElementById('choices').innerHTML = '';
+          const continueButton = document.createElement('button');
+          continueButton.className = 'button';
+          continueButton.textContent = 'Continue';
+          continueButton.onclick = () => {
+            sceneIndex++;
+            if (sceneIndex < scenes.length) {
+              showScene();
+            } else {
+              document.getElementById('continueBtn').innerHTML = '<p style="text-align:center;margin-top:2rem;">-- End of Journey --</p>';
+            }
+          };
+          document.getElementById('continueBtn').appendChild(continueButton);
+        };
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    // Initially display splash
+    showScreen('splash');
+  </script>
+</body>
+</html>
